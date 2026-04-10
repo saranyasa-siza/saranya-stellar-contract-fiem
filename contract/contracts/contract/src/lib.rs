@@ -1,63 +1,23 @@
 #![no_std]
-
-use soroban_sdk::{
-    contract, contractimpl, contracttype,
-    Env, Address, String
-};
-
-#[contracttype]
-#[derive(Clone)]
-pub struct Property {
-    pub id: u64,
-    pub owner: Address,
-    pub metadata: String,
-}
-
-#[contracttype]
-pub enum DataKey {
-    Property(u64),
-}
+use soroban_sdk::{contract, contractimpl, vec, Env, String, Vec};
 
 #[contract]
-pub struct RealEstateContract;
+pub struct Contract;
 
+// This is a sample contract. Replace this placeholder with your own contract logic.
+// A corresponding test example is available in `test.rs`.
+//
+// For comprehensive examples, visit <https://github.com/stellar/soroban-examples>.
+// The repository includes use cases for the Stellar ecosystem, such as data storage on
+// the blockchain, token swaps, liquidity pools, and more.
+//
+// Refer to the official documentation:
+// <https://developers.stellar.org/docs/build/smart-contracts/overview>.
 #[contractimpl]
-impl RealEstateContract {
-
-    pub fn register_property(env: Env, id: u64, owner: Address, metadata: String) {
-        owner.require_auth();
-
-        let key = DataKey::Property(id);
-
-        if env.storage().instance().has(&key) {
-            panic!("Property already exists");
-        }
-
-        let property = Property { id, owner, metadata };
-        env.storage().instance().set(&key, &property);
-    }
-
-    pub fn get_property(env: Env, id: u64) -> Property {
-        let key = DataKey::Property(id);
-
-        env.storage()
-            .instance()
-            .get(&key)
-            .unwrap()
-    }
-
-    pub fn transfer_property(env: Env, id: u64, new_owner: Address) {
-        let key = DataKey::Property(id);
-
-        let mut property: Property = env.storage()
-            .instance()
-            .get(&key)
-            .unwrap();
-
-        property.owner.require_auth();
-
-        property.owner = new_owner;
-
-        env.storage().instance().set(&key, &property);
+impl Contract {
+    pub fn hello(env: Env, to: String) -> Vec<String> {
+        vec![&env, String::from_str(&env, "Hello"), to]
     }
 }
+
+mod test;
